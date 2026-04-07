@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaaS License Monitor — Portfolio Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --border: #E4E2DC;
+    --border-subtle: #EDEBE6;
+    --text-primary: #18180F;
+    --text-secondary: #6B6960;
+    --text-muted: #9C9A93;
+    --critical-bg: #FEF2F2;
+    --critical-text: #B91C1C;
+    --critical-border: #FECACA;
+    --warning-bg: #FFFBEB;
+    --warning-text: #B45309;
+    --warning-border: #FDE68A;
+    --healthy-bg: #F0FDF4;
+    --healthy-text: #15803D;
+    --healthy-border: #BBF7D0;
+    --accent: #18180F;
+    --radius: 8px;
+    --radius-sm: 4px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* BANNER */
+  .banner {
+    background: var(--accent);
+    color: #fff;
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 12px;
+    letter-spacing: 0.01em;
+  }
+  .banner a {
+    color: #D4D2CB;
+    text-decoration: underline;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .header-left p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  .chip.live { border-color: var(--healthy-border); background: var(--healthy-bg); color: var(--healthy-text); }
+
+  /* MAIN */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* SECTION */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  /* HEALTH CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+  }
+  .card-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 8px;
+    white-space: nowrap;
+  }
+  .card-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .card-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+  .card.critical { border-color: var(--critical-border); background: var(--critical-bg); }
+  .card.critical .card-value { color: var(--critical-text); }
+  .card.critical .card-label { color: var(--critical-text); opacity: 0.8; }
+  .card.warning { border-color: var(--warning-border); background: var(--warning-bg); }
+  .card.warning .card-value { color: var(--warning-text); }
+  .card.warning .card-label { color: var(--warning-text); opacity: 0.8; }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    background: var(--bg);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { color: var(--text-primary); }
+  thead th.sorted { color: var(--text-primary); }
+  tbody tr {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); }
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  td.mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+  }
+  .badge::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .badge.critical { background: var(--critical-bg); color: var(--critical-text); border-color: var(--critical-border); }
+  .badge.critical::before { background: var(--critical-text); }
+  .badge.warning  { background: var(--warning-bg);  color: var(--warning-text);  border-color: var(--warning-border); }
+  .badge.warning::before  { background: var(--warning-text); }
+  .badge.healthy  { background: var(--healthy-bg);  color: var(--healthy-text);  border-color: var(--healthy-border); }
+  .badge.healthy::before  { background: var(--healthy-text); }
+
+  /* UTILIZATION BAR */
+  .util-cell { display: flex; align-items: center; gap: 10px; }
+  .util-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    min-width: 60px;
+  }
+  .util-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--text-primary);
+    transition: width 0.6s ease;
+  }
+  .util-bar-fill.critical { background: var(--critical-text); }
+  .util-bar-fill.warning  { background: var(--warning-text); }
+  .util-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    width: 38px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* TREND */
+  .trend-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .trend-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .trend-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .trend-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .chart-area { width: 100%; overflow-x: auto; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    margin-top: 40px;
+  }
+  .footer a { color: var(--text-secondary); text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+    .header { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 20px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  ⚠ Portfolio demo — anonymized data only. No live systems connected.
+  Built to illustrate the <a href="https://github.com/mahdeen-reza/saas-license-monitor" target="_blank">saas-license-monitor</a> pipeline.
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <h1>SaaS License Monitor</h1>
+    <p>License capacity across all IS-managed systems · Refreshed daily at 06:00 UTC</p>
+  </div>
+  <div class="header-right">
+    <span class="chip">Snapshot: Today</span>
+    <span class="chip">5 systems</span>
+    <span class="chip live">● Pipeline live</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- HEALTH SUMMARY -->
+  <section>
+    <div class="section-label">Health Summary</div>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-label">Systems monitored</div>
+        <div class="card-value">5</div>
+        <div class="card-sub">Phase 1 · Salesforce</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total licenses</div>
+        <div class="card-value">2,535</div>
+        <div class="card-sub">Across all instances</div>
+      </div>
+      <div class="card">
+        <div class="card-label">In use</div>
+        <div class="card-value">2,419</div>
+        <div class="card-sub">95.4% utilization</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Available</div>
+        <div class="card-value">116</div>
+        <div class="card-sub">Across all types</div>
+      </div>
+      <div class="card critical">
+        <div class="card-label">At critical</div>
+        <div class="card-value">1</div>
+        <div class="card-sub">&lt; 5 seats remaining</div>
+      </div>
+      <div class="card warning">
+        <div class="card-label">At warning</div>
+        <div class="card-value">1</div>
+        <div class="card-sub">&lt; 10 seats remaining</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM DETAIL -->
+  <section>
+    <div class="section-label">System Detail</div>
+    <div class="table-wrap">
+      <table id="detail-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)">System</th>
+            <th onclick="sortTable(1)">License type</th>
+            <th onclick="sortTable(2)">Total</th>
+            <th onclick="sortTable(3)">Used</th>
+            <th onclick="sortTable(4)">Available</th>
+            <th onclick="sortTable(5)">Utilization</th>
+            <th onclick="sortTable(6)">Status</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TREND -->
+  <section>
+    <div class="section-label">Trend</div>
+    <div class="trend-wrap">
+      <div class="trend-header">
+        <div>
+          <div class="trend-title">Available licenses — last 7 days</div>
+          <div class="trend-sub">One data point per daily pipeline run · Salesforce license type only</div>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="chart-area">
+        <svg id="trend-chart" width="100%" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  Portfolio demo · Anonymized data · No live systems connected ·
+  <a href="https://github.com/mahdeen-reza/saas-license-monitor" target="_blank">View repo →</a>
+</div>
+
+<script>
+const ROWS = [
+  { system: 'Instance A', type: 'Salesforce',       total: 1680, used: 1641, status: 'healthy' },
+  { system: 'Instance B', type: 'Salesforce',       total: 195,  used: 188,  status: 'warning'  },
+  { system: 'Instance C', type: 'Salesforce',       total: 86,   used: 84,   status: 'critical' },
+  { system: 'Instance C', type: 'Chatter External', total: 200,  used: 180,  status: 'healthy'  },
+  { system: 'Instance D', type: 'Salesforce',       total: 229,  used: 197,  status: 'healthy'  },
+  { system: 'Instance E', type: 'Salesforce',       total: 145,  used: 129,  status: 'healthy'  },
+];
+
+// Derive available and utilization
+ROWS.forEach(r => {
+  r.available = r.total - r.used;
+  r.util = Math.round((r.used / r.total) * 1000) / 10;
+});
+
+// Render table
+let sortCol = 4, sortDir = 1; // default sort: available asc
+
+function renderTable() {
+  const sorted = [...ROWS].sort((a, b) => {
+    const vals = [
+      [a.system, b.system],
+      [a.type, b.type],
+      [a.total, b.total],
+      [a.used, b.used],
+      [a.available, b.available],
+      [a.util, b.util],
+      [a.status, b.status],
+    ];
+    const [av, bv] = vals[sortCol];
+    if (av < bv) return -sortDir;
+    if (av > bv) return sortDir;
+    return 0;
+  });
+
+  document.getElementById('table-body').innerHTML = sorted.map(r => `
+    <tr>
+      <td><strong>${r.system}</strong></td>
+      <td>${r.type}</td>
+      <td class="mono">${r.total.toLocaleString()}</td>
+      <td class="mono">${r.used.toLocaleString()}</td>
+      <td class="mono"><strong>${r.available}</strong></td>
+      <td>
+        <div class="util-cell">
+          <div class="util-bar-bg">
+            <div class="util-bar-fill ${r.status}" style="width:${Math.min(r.util,100)}%"></div>
+          </div>
+          <span class="util-pct">${r.util}%</span>
+        </div>
+      </td>
+      <td><span class="badge ${r.status}">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span></td>
+    </tr>
+  `).join('');
+
+  // Update header classes
+  document.querySelectorAll('#detail-table thead th').forEach((th, i) => {
+    th.classList.toggle('sorted', i === sortCol);
+  });
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  renderTable();
+}
+
+renderTable();
+
+// TREND CHART
+const COLORS = {
+  'Instance A': '#18180F',
+  'Instance B': '#D97706',
+  'Instance C': '#DC2626',
+  'Instance D': '#2563EB',
+  'Instance E': '#7C3AED',
+};
+
+// 7-day fake trend: available licenses for Salesforce type only
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const TREND = {
+  'Instance A': [44, 42, 41, 40, 39, 39, 39],
+  'Instance B': [14, 12, 11, 10, 9,  8,  7],
+  'Instance C': [8,  6,  5,  4,  3,  2,  2],
+  'Instance D': [35, 34, 33, 33, 32, 32, 32],
+  'Instance E': [19, 18, 18, 17, 17, 16, 16],
+};
+
+function drawChart() {
+  const svg = document.getElementById('trend-chart');
+  const W = 900, H = 260;
+  const PAD = { top: 20, right: 20, bottom: 36, left: 44 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const allVals = Object.values(TREND).flat();
+  const maxV = Math.max(...allVals) + 5;
+  const minV = 0;
+
+  const xStep = cW / (DAYS.length - 1);
+  const yScale = v => PAD.top + cH - ((v - minV) / (maxV - minV)) * cH;
+  const xScale = i => PAD.left + i * xStep;
+
+  let html = '';
+
+  // Grid lines
+  const ticks = [0, 10, 20, 30, 40, 50].filter(t => t <= maxV);
+  ticks.forEach(t => {
+    const y = yScale(t);
+    html += `<line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}" stroke="#E4E2DC" stroke-width="1"/>`;
+    html += `<text x="${PAD.left - 6}" y="${y + 4}" text-anchor="end" font-family="DM Mono, monospace" font-size="10" fill="#9C9A93">${t}</text>`;
+  });
+
+  // Day labels
+  DAYS.forEach((d, i) => {
+    html += `<text x="${xScale(i)}" y="${H - 8}" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#9C9A93">${d}</text>`;
+  });
+
+  // Alert threshold line (critical = 5)
+  const critY = yScale(5);
+  html += `<line x1="${PAD.left}" y1="${critY}" x2="${W - PAD.right}" y2="${critY}" stroke="#FECACA" stroke-width="1" stroke-dasharray="4 3"/>`;
+  html += `<text x="${W - PAD.right + 4}" y="${critY + 4}" font-family="DM Sans, sans-serif" font-size="9" fill="#B91C1C">critical</text>`;
+
+  const warnY = yScale(10);
+  html += `<line x1="${PAD.left}" y1="${warnY}" x2="${W - PAD.right}" y2="${warnY}" stroke="#FDE68A" stroke-width="1" stroke-dasharray="4 3"/>`;
+  html += `<text x="${W - PAD.right + 4}" y="${warnY + 4}" font-family="DM Sans, sans-serif" font-size="9" fill="#B45309">warning</text>`;
+
+  // Lines + dots
+  Object.entries(TREND).forEach(([inst, vals]) => {
+    const color = COLORS[inst];
+    const pts = vals.map((v, i) => `${xScale(i)},${yScale(v)}`).join(' ');
+    html += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    vals.forEach((v, i) => {
+      html += `<circle cx="${xScale(i)}" cy="${yScale(v)}" r="3.5" fill="${color}" stroke="white" stroke-width="1.5"/>`;
+    });
+  });
+
+  svg.innerHTML = html;
+
+  // Legend
+  const legend = document.getElementById('legend');
+  legend.innerHTML = Object.entries(COLORS).map(([inst, color]) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${color}"></div>
+      <span>${inst}</span>
+    </div>
+  `).join('');
+}
+
+drawChart();
+window.addEventListener('resize', drawChart);
+</script>
+</body>
+</html>
