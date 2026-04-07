@@ -10,9 +10,9 @@ A centralized license capacity monitoring pipeline built on BigQuery, Fivetran, 
 
 ## The Problem
 
-Before this project, checking license capacity meant logging into each SaaS tool individually. There was no central view, no trend tracking, and no alerting. License shortages were only discovered when a new hire couldn't be provisioned — at which point it was already too late to plan a response.
+Before this project, checking license capacity meant logging into each SaaS tool individually — different interface, different reporting format, no consistent cadence. Staying current required constant context switching across systems with no central view to anchor it.
 
-The process was entirely reactive. The fix needed to be proactive, automated, and maintainable by a small team without specialized data engineering resources.
+The absence of alerting meant shortages only surfaced when a new hire couldn't be provisioned. At that point, the remediation path — identifying removable users, requesting additional licenses, waiting on vendor processing — added days of delay to onboarding. There was no utilization history, no trend data, and no data foundation for renewal conversations. Every shortage was reactive. Every incident was avoidable.
 
 ---
 
@@ -99,10 +99,11 @@ Alert thresholds are defined in the LookML `alert_status` dimension and evaluate
 | | Before | After |
 |---|---|---|
 | How shortages were discovered | User couldn't be provisioned | Slack alert at 06:30 UTC before anyone is affected |
-| Capacity check process | Log into each tool individually | Single dashboard, all systems |
+| Capacity check process | Manual, per-system, no consistent cadence | Single dashboard, all systems, updated daily |
 | Trend visibility | None | 3 years of daily snapshots retained |
+| Renewal planning basis | Anecdotal | Data-driven utilization history per system |
 | Alerting | None | Automated, threshold-based, tiered by severity |
-| Time to check capacity across all instances | ~30–45 min manual | < 30 seconds |
+| License logic documentation | Tacit knowledge | Encoded in SQL, versioned, editable |
 
 **Key numbers:**
 
