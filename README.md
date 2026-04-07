@@ -5,6 +5,7 @@ A centralized license capacity monitoring pipeline built on BigQuery, Fivetran, 
 **Stack:** BigQuery · Fivetran · Looker · GCP · SQL · LookML  
 **Role:** Sole designer and builder — architecture, SQL, LookML, alerting, documentation  
 **Status:** Phase 1 live. Phase 2 designed and documented.
+**Demo:** [mahdeen-reza.github.io/saas-license-monitor](https://mahdeen-reza.github.io/saas-license-monitor/)
 
 ---
 
@@ -142,3 +143,9 @@ saas-license-monitor/
 ## A Note on This Repository
 
 This is a sanitized portfolio version of an internal production tool. Company name, instance names, internal identifiers, and colleague references have been abstracted or removed. The pipeline architecture, SQL logic, LookML modeling, and design decisions are real and reflect the actual system as built.
+
+---
+
+## Live Demo
+
+A static portfolio mock of the dashboard is deployed at **[mahdeen-reza.github.io/saas-license-monitor](https://mahdeen-reza.github.io/saas-license-monitor/)**. It uses anonymized fake data across all five instances and illustrates the three dashboard sections — health summary, system detail, and trend view — including alert status logic and sortable columns. No live systems are connected.
